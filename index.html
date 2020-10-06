@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <title>What's the weather?</title>
 
     <link href=https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css
     rel="stylesheet">
@@ -28,16 +28,24 @@
                       </div>
                   <button id="submitCity" type="submit" class="btn btn-primary">Get Weather</button>
                   <!--Maybe create a previous cities list here-->
+                  <div class="prevSearches"></div>
                 </form>
                 </div>
                 <div class="col-md-9">
-                    <h1 class="city"></h1>
+                    <div class="card text-black bg-info">
+                    <h1 id="city" class="card-title"></h1>
                     <!-- <div class="icon"></div> -->
-                    <div class="temp"></div>
-                    <div class="humidity"></div>
-                    <div class="windSpeed"></div>
-                    <div class="uvIndex"></div>
+                    <p id="temp" class="card-text"></p>
+                    <p id="humidity" class="card-text"></p>
+                    <p id="windSpeed" class="card-text"></p>
+                    <p id="uvIndex" class="card-text"></p>
                 </div>
+                </div>
+          </div>
+          <div class="row">
+              <div class="col-md9">
+                  <div class="fiveDay"></div>
+              </div>
           </div>
             
         </div>
@@ -49,6 +57,7 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.31/moment-timezone.min.js"></script> -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/open-weather/2.0.0/openweather.min.js" integrity="sha512-mlRoH3bU+q4t5clJkMwltJcka6JyNWsUJybBclHUiU0Bdux6LtcNqO8XMNi9/vp4+KCteAbc0hYnHU4Rh2SH+g==" crossorigin="anonymous"></script>
     <script src="logic.js"></script>
     
