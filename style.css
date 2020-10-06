@@ -3,4 +3,11 @@
     padding:10px;
     font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
 } */
-
+header {
+    text-align: center;
+    background-color: gray;
+}
+form {
+    background-color:beige;
+    text-align: center;
+}

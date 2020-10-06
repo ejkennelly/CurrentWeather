@@ -8,9 +8,6 @@
 //When the page is refreshed, last searched for city is shown
 $(document).ready(function(){
 //One call API
-var queryURL = "api.openweathermap.org/data/2.5/weather?q="          
-
-var APIkey = "&appid=5b000dfb0c4cf0200c9fce5439f8f59a"
 
 // This function handles events where one button is clicked
 $("#submitCity").on("click", function(event) {
@@ -21,15 +18,28 @@ $("#submitCity").on("click", function(event) {
     callCityAPI(city)
    
   });
-
+  var queryURL = "https://api.openweathermap.org/data/2.5/weather?q=";         
+  var APIkey = "&units=imperial&appid=5b000dfb0c4cf0200c9fce5439f8f59a";
+  var currentDate = moment().format('L');
+  
+  
   //calls API
   function callCityAPI(city) {
       $.ajax({
           method: "GET",
-          url:  "http://api.openweathermap.org/data/2.5/weather?q="+city+"&appid=5b000dfb0c4cf0200c9fce5439f8f59a",
+          url:  queryURL+ city+APIkey,
           dataType: "json",
           success: function(data) {
               console.log(data);
+              var iconCode = data.weather[0].icon;
+              var iconURL = "http://openweathermap.org/img/w/" + iconCode + ".png";
+              
+              $(".city").html(data.name + "   (" + currentDate + ") " + ("<img src='" + iconURL  + "'>"));
+              $(".temp").text("Temperature (F): " + data.main.temp);
+              $(".humidity").text("Humidity: " + data.main.humidity);
+              $(".windSpeed").text("Wind Speed (mph): " + data.wind.speed);
+              $(".uvIndex").text()
+
           }
       })
   }
