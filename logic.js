@@ -6,64 +6,67 @@
 //Future- 5 day forecast with date, icon, temp and humidity
 //When a search history city is clicked, that city is presented again
 //When the page is refreshed, last searched for city is shown
-var savedLocations = [];
-var currentLoc;
 
-function initialize() {
-    //grab previous locations from local storage
-    savedLocations = JSON.parse(localStorage.getItem("cityInput"));
-    var lastSearch;
-    //display buttons for previous searches
-    if (savedLocations) {
-        //get the last city searched so we can display it
-        currentLoc = savedLocations[savedLocations.length - 1];
-        showPrevious();
-        getCurrent(currentLoc);
-    }
-    else {
-        //try to geolocate, otherwise set city to raleigh
-        if (!navigator.geolocation) {
-            //can't geolocate and no previous searches, so just give them one
-            getCurrent("Bee Lick");
-        }
+    var savedLocations = [];
+    var currentLoc;
+
+    function initialize() {
+        //grab previous locations from local storage
+        savedLocations = JSON.parse(localStorage.getItem("citySearch"));
+        //display buttons for previous searches
+        if (savedLocations) {
+            //get the last city searched so we can display it
+            currentLoc = savedLocations[savedLocations.length - 1];
+            showPrevious();
+            getCurrent(currentLoc);
+            }   
         else {
-            navigator.geolocation.getCurrentPosition(error);
+                var queryURL = "https://api.openweathermap.org/data/2.5/weather?q=Austin&appid=5b000dfb0c4cf0200c9fce5439f8f59a";
+                $.ajax({
+                    url:queryURL,
+                    method: "GET",
+                }).then(function(response){
+                    currentLoc = response.name;
+                    saveLoc(response.name);
+                    getCurrent(currentLoc);
+                });
+            }
+    }
+   
+
+
+    function showPrevious() {
+        if (savedLocations) {
+            $(".prevSearches").empty();
+            var btns = $("<div>").attr("class", "list-group");
+            for (var j = 0; j < savedLocations.length; j++) {
+                var cityBtn = $("<a>").attr("href", "#").attr("id", "city-btn").text(savedLocations[j]);
+                if (savedLocations[j] == currentLoc) {
+                    cityBtn.attr("class", "list-group-item list-group-item-action active");
+                }
+                else {
+                    cityBtn.attr("class", "list-group-item list-group-item-action");
+                }
+                btns.prepend(cityBtn);
+            }
+            $(".prevSearches").append(btns)
         }
     }
-}
-function error(){
-    //can't geolocate and no previous searches, so just give them one
-    currentLoc = "Bee Lick"
-    getCurrent(currentLoc);
-}
 
-$(document).ready(function () {
-    //One call API
+    //calls API 
+    function getCurrent(city) {
+        var queryURL = "https://api.openweathermap.org/data/2.5/weather?q=";
+        var APIkey = "&units=imperial&appid=5b000dfb0c4cf0200c9fce5439f8f59a";
+        var uvAPIkey = "&appid=5b000dfb0c4cf0200c9fce5439f8f59a";
+        var currentDate = moment().format("L");
 
-    // This function handles events where one button is clicked
-    $("#submitCity").on("click", function (event) {
-        event.preventDefault();
-
-        // This line grabs the input from the textbox
-        var city = $("#cityInput").val().trim();
-        callCityAPI(city);
-    });
-
-
-    var queryURL = "https://api.openweathermap.org/data/2.5/weather?q=";
-    var APIkey = "&units=imperial&appid=5b000dfb0c4cf0200c9fce5439f8f59a";
-
-    var uvAPIkey = "&appid=5b000dfb0c4cf0200c9fce5439f8f59a";
-    var currentDate = moment().format("L");
-
-    //calls API
-    function callCityAPI(city) {
         $.ajax({
             method: "GET",
             url: queryURL + city + APIkey,
             dataType: "json",
             success: (function (data) {
                 console.log(data);
+                $(".fiveDay").append("#daily");
 
                 var iconCode = data.weather[0].icon;
                 var uvURL =
@@ -95,8 +98,8 @@ $(document).ready(function () {
                     dataType: "json"
                 }).then(function (data) {
                     // console.log(data);
-                    var uvInt = data.value;
-                    var bgcolor;
+                    var uvInt = parseInt(data.value);
+                    var bgcolor = "";
                     if (uvInt <= 3) {
                         bgcolor = "green";
                     }
@@ -110,25 +113,87 @@ $(document).ready(function () {
                     }
                     //Having issues getting color to change
                     $("#uvIndex").text("UV Index: ");
-                    $("#uvIndex").append($("<span>").attr("id", "uvIndex").attr("style", ("background-color:" + bgcolor)).text(uvInt));
+                    $("#uvIndex").append($("<span>").attr("id", "uvIndex").attr("style", ("background-color: " + bgcolor)).text(uvInt));
                 });
 
 
                 var fiveDayAPI = "https://api.openweathermap.org/data/2.5/forecast?q=";
-                var fiveDayKey = "&cnt=5&units=imperial&appid=c58694ce4b6677ee10931f7d70076866";
+                var fiveDayKey = "&units=imperial&appid=c58694ce4b6677ee10931f7d70076866";
 
                 $.ajax({
                     method: "GET",
                     url: fiveDayAPI + city + fiveDayKey,
                     dataType: "json"
                 }).then(function (data) {
-                    console.log(data)
-                    $(".fiveDay").html(data.)
+                    console.log(data);
+                    var newrow = $("<div>").attr("class", "forecast");
+                    $("#fiveDay").append(newrow);
+
+                    for (var i = 0; i < data.list.length; i++) {
+                        if (data.list[i].dt_txt.indexOf("15:00:00") !== -1) {
+                            var newCol = $("<div>").attr("class", "one-fifth");
+                            newrow.append(newCol);
+
+                            var newCard = $("<div>").attr("class", "card text-black bg-info");
+                            newCol.append(newCard);
+
+                            var cardHead = $("<div>").attr("class", "card-header").text(moment(data.list[i].dt, "X").format("MMM Do"));
+                            newCard.append(cardHead);
+
+                            var cardImg = $("<img>").attr("class", "card-img-top").attr("src", "https://openweathermap.org/img/wn/" + data.list[i].weather[0].icon + "@2x.png");
+                            newCard.append(cardImg);
+
+                            var bodyDiv = $("<div>").attr("class", "card-body");
+                            newCard.append(bodyDiv);
+
+                            bodyDiv.append($("<p>").attr("class", "card-text").html("Temp: " + data.list[i].main.temp + "°F"));
+                            bodyDiv.append($("<p>").attr("class", "card-text").text("Humidity: " + data.list[i].main.humidity + "%"));
+                        }
+
+                    }
                 })
 
 
             }),
         });
     };
+    //clear previous cities five day forecasts
+    function clear() {
+        $("#fiveDay").empty();
+    }
+
+    function saveLoc(city) {
+        if (savedLocations === null) {
+            savedLocations = [city];
+        }
+        else if (savedLocations.indexOf(city) === -1) {
+            savedLocations.push(city)
+        }
+        localStorage.setItem("citySearch", JSON.stringify(savedLocations));
+        showPrevious();
+    }
+
+    // This function handles events when submit button is clicked
+    $("#submitCity").on("click", function (event) {
+    event.preventDefault();
+
+    // This line grabs the input from the textbox
+    var city = $("#cityInput").val().trim();
+    if (city !== "") {
+        clear();
+        currentCity = city;
+        saveLoc(city);
+        $("#cityInput").val("");
+        getCurrent(city);
+    }
 
 });
+
+$(document).on("click", "#city-btn", function () {
+    clear();
+    currentLoc = $(this).text();
+    showPrevious();
+    getCurrent(currentLoc);
+});
+initialize();
+
