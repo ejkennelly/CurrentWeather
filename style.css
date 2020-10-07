@@ -1,15 +1,26 @@
-/* * {
-    margin: 10px;
-    padding:10px;
-    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
-} */
+
 header {
     text-align: center;
-    background-color: gray;
+    background-color:skyblue;
+    color:yellow
+
 }
 form {
-    background-color:beige;
+    background-color: rgb(183, 136, 218);
     text-align: center;
+    color:black;
+   }
+#submitCity {
+    background-color: rgb(25, 155, 112);
+    color: black;
+    margin-bottom: 5px;
+}
+#city-btn{
+    margin-top: 5px;
+    background-color: rgb(226, 122, 209);
+}
+.prevSearches {
+    background-color:rgb(212, 10, 162);
 }
 .one-fifth {
     box-sizing: border-box;
@@ -25,4 +36,10 @@ form {
 
 .one-fifth:last-child{
     margin-right: 0px;
+}
+.forecast {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin: 0px 0px;
 }
