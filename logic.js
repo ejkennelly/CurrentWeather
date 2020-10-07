@@ -150,6 +150,7 @@
     //clear previous cities five day forecasts
     function clear() {
         $("#fiveDay").empty();
+        $("#uvIndex").empty();
     }
 
     function saveLoc(loc) {
@@ -179,7 +180,6 @@
 
     $(document).on("click", "#city-btn", function () {
         clear();
-        $("#uvIndex").empty();
         currentLoc = $(this).text();
         showPrevious();
         getCurrent(currentLoc);
