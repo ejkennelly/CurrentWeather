@@ -74,47 +74,40 @@
             var iconCode = data.weather[0].icon;
             var iconURL = "https://openweathermap.org/img/wn/" + iconCode + "@2x.png";
 
-            $("#fiveDay").append("#forecastRow")
-
-
             $("#city").html(data.name +  " (" + currentDate + ") " + "<img src=" + iconURL + ">");
             $("#temp").text("Temperature: " + data.main.temp + "°F");
             $("#humidity").text("Humidity: " + data.main.humidity + "%");
             $("#windSpeed").text("Wind Speed: " + data.wind.speed + "MPH");
             getUV();
             getForecast();
+
             function getUV() {
                 var uvURL = "https://api.openweathermap.org/data/2.5/uvi?lat=" + data.coord.lat + "&lon=" + data.coord.lon;
                 $.ajax({
                     method: "GET",
                     url: uvURL + uvAPIkey,
                     dataType: "json",
-                }).then(function (uvData) {
-                    // console.log(data);
-                    var uvInt = parseInt(uvData.value);
-                    var bgcolor;
-                    if (uvInt <= 2.99) {
-                        bgcolor = "green";
+                    success: function(data) {
+                    var uv = $("<p>").text("UV Index: ");
+                    var btn = $("<span>").addClass("btn btn-sm").text(data.value);
+                    // change color depending on uv value
+                    if (data.value < 3) {
+                      btn.addClass("btn-success");
                     }
-                    else if (uvInt >= 3 || uvInt <= 5.99) {
-                        bgcolor = "yellow";
+                    else if (data.value < 7) {
+                      btn.addClass("btn-warning");
                     }
-                    else if (uvInt >= 6 || uvInt <= 7.99) {
-                        bgcolor = "orange";
-
-                    } else if (uvInt > 8) {
-                        bgcolor = "red";
+                    else {
+                      btn.addClass("btn-danger");
                     }
-
-                    $("#uvIndex").text("UV Index: ");
-                    $("#uvIndex").append($("<span>").attr("id", "uvIndex").attr("style", ("background-color: " + bgcolor)).text(uvInt));
-
+                    $("#uvIndex").append(uv.append(btn));
+                  }
                 });
-                getForecast(data.id)
             }
-        })
-
-    };
+            
+                getForecast(data.id)
+            })
+        };
 
 
     function getForecast(city) {
@@ -125,8 +118,6 @@
         $.ajax({
             url: fiveDayAPI + city + fiveDayKey,
             method: "GET",
-
-            dataType: "json"
         }).then(function (forecastData) {
             console.log(forecastData);
             var newrow = $("<div>").attr("class", "forecast");
@@ -175,7 +166,7 @@
     $("#submitCity").on("click", function (event) {
         event.preventDefault();
         // This line grabs the input from the textbox
-        var city = $("#cityInput").val().trim();
+        var loc = $("#cityInput").val().trim();
         //if city isn't empty
         if (loc !== "") {
             clear();
@@ -188,6 +179,7 @@
 
     $(document).on("click", "#city-btn", function () {
         clear();
+        $("#uvIndex").empty();
         currentLoc = $(this).text();
         showPrevious();
         getCurrent(currentLoc);
